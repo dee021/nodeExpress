@@ -1,12 +1,11 @@
-const fortune = require('./lib/fortune');
+// const fortune = require('./lib/fortune');
+const handlers = require('./lib/handlers');
 const express = require('express');
 const exHandlebars = require('express-handlebars');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const fortunes = ["conquer your fears or they will conquer you.", 
-"Rivers need springs.", "Do not fear what you don't know.", 
-"You will have a pleasant surprise.", "Whenever possible, keep it simple."];
+
 
 // 핸들바 뷰 엔진 설정
 app.engine('handlebars', exHandlebars({
@@ -29,6 +28,7 @@ app.get('/about', (req, res) => {
 })
 */
 
+/*
 // --> 뷰 사용
 app.get('/', (req, res) => res.render('home'));
 
@@ -55,8 +55,24 @@ app.use((err, req, res, next) => {
     // res.send('500 - Server Error')
     res.render('500');
 });
+*/
 
-app.listen(port, () => console.log(
-    `Express started on http://localhost:${port}; ` + `press Ctrl-C to terminate.`
-));
+// ==> 라우트 핸들러 라이브러리 분리
+app.get('/', handlers.home);
+app.get('/about', handlers.about);
+
+app.use(handlers.notFound);
+app.use(handlers.serverError);
+
+// app.listen(port, () => console.log(
+//     `Express started on http://localhost:${port}; ` + `press Ctrl-C to terminate.`
+// ));
+
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Express started on http://localhost:${port}; ` + `press Ctrl-C to terminate.`);
+    });
+} else {
+    module.exports = app;
+}
 
